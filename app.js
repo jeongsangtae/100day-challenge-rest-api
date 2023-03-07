@@ -1,12 +1,23 @@
 const express = require("express");
 
+const db = require("./data/database");
+
+const quoteRoutes = require("./routes/quotes-routes");
+
 const app = express();
 
-app.get("/quote", function (req, res, next) {
-  res.json({
-    quote:
-      "웹 개발에 더 깊이 빠져들수록 웹 개발도 나에게 더 깊이 파고들 것이다.",
+app.use("/quote", quoteRoutes);
+
+app.use(function (error, req, res, next) {
+  res.status(500).json({
+    message: "뭔가 잘못되었습니다!",
   });
 });
 
-app.listen(3000);
+db.initDb()
+  .then(function () {
+    app.listen(3000);
+  })
+  .catch(function (error) {
+    console.log("데이터베이스 연결에 실패했습니다.");
+  });
